@@ -47,14 +47,28 @@ public class InfoDAO {
 		return list;
 	}
 	
-	public void searchSchoolInfo(String sch_name) {
+	public InfoBean searchSchoolInfo(String sch_name) {
+		iBean = new InfoBean();
 		try {
 			con = dbConn();
 			sql = "SELECT * FROM school_info WHERE sch_name ="+sch_name;
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				iBean.setSch_name(rs.getString("sch_name"));
+				iBean.setGwanhal(rs.getString("gwanhal"));
+				iBean.setSulrip(rs.getString("sulrip"));
+				iBean.setTel(rs.getString("tel"));
+				iBean.setFax(rs.getString("fax"));
+				iBean.setPost(rs.getString("post"));
+				iBean.setAddress(rs.getString("address"));
+				iBean.setHomepage(rs.getString("homepage"));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			dbClose();
 		}
+		return iBean;
 	}
 }
