@@ -9,12 +9,16 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import maintenance.MainBean;
+
 public class InfoDAO {
 	Connection con = null;
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
+	ArrayList list = null;
 	String sql = "";
 	InfoBean iBean;
+	MainBean mBean;
 	
 	public Connection dbConn() throws Exception {
 		Context init=new InitialContext();
@@ -30,7 +34,7 @@ public class InfoDAO {
 	}
 	
 	public ArrayList<String> school_all() {
-		ArrayList<String> list = new ArrayList<String>();
+		list = new ArrayList<String>();
 		try {
 			con = dbConn();
 			sql = "SELECT sch_name FROM school_info";
@@ -47,11 +51,11 @@ public class InfoDAO {
 		return list;
 	}
 	
-	public InfoBean searchSchoolInfo(String sch_name) {
+	public InfoBean searchSchoolInfo(int key_num) {
 		iBean = new InfoBean();
 		try {
 			con = dbConn();
-			sql = "SELECT * FROM school_info WHERE sch_name ="+sch_name;
+			sql = "SELECT * FROM school_info WHERE key_num ="+key_num;
 			pstmt = con.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
@@ -70,5 +74,25 @@ public class InfoDAO {
 			dbClose();
 		}
 		return iBean;
+	}
+	
+	public ArrayList<InfoBean> searchKey(String sch_name) {
+		iBean = new InfoBean();
+		list = new ArrayList<InfoBean>();
+		try {
+			con = dbConn();
+			sql = "SELECT school_info_id,sch_name FROM school_info WHERE sch_name like ?";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, '%'+sch_name+'%');
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				iBean.setSchool_info_id(rs.getInt("school_info_id"));
+				iBean.setSch_name(rs.getString("sch_name"));
+				list.add(iBean);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 }

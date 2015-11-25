@@ -1,5 +1,7 @@
 package school_info;
 
+import java.util.List;
+
 public class InfoBean {
 	private int school_info_id; 
 	private String gwanhal; 
