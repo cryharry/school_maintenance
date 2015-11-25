@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -12,10 +13,11 @@ import javax.sql.DataSource;
 import maintenance.MainBean;
 
 public class InfoDAO {
-	Connection con = null;
-	PreparedStatement pstmt = null;
-	ResultSet rs = null;
-	ArrayList list = null;
+	Connection con;
+	PreparedStatement pstmt;
+	ResultSet rs;
+	ArrayList<String> list;
+	HashMap<String, String> map;
 	String sql = "";
 	InfoBean iBean;
 	MainBean mBean;
@@ -76,23 +78,23 @@ public class InfoDAO {
 		return iBean;
 	}
 	
-	public ArrayList<InfoBean> searchKey(String sch_name) {
+	public HashMap<String, String> searchKey(String sch_name) {
 		iBean = new InfoBean();
-		list = new ArrayList<InfoBean>();
+		map = new HashMap<String, String>();
 		try {
 			con = dbConn();
-			sql = "SELECT school_info_id,sch_name FROM school_info WHERE sch_name like ?";
+			sql = "SELECT sch_name FROM school_info WHERE sch_name like ?";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, '%'+sch_name+'%');
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
-				iBean.setSchool_info_id(rs.getInt("school_info_id"));
-				iBean.setSch_name(rs.getString("sch_name"));
-				list.add(iBean);
+				map.put(Integer.toString(rs.getRow()-1), rs.getString("sch_name"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			dbClose();
 		}
-		return list;
+		return map;
 	}
 }
