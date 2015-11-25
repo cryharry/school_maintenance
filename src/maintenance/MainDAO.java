@@ -3,7 +3,6 @@ package maintenance;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -57,6 +56,7 @@ public class MainDAO {
 		return mBean;
 	}
 	
+	// 학교명으로 key_num 가져오기
 	public int getKeyNum(String sch_name) {
 		int key_num = 0;
 		
@@ -70,12 +70,36 @@ public class MainDAO {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		} finally {
+			dbClose();
+		}
 		return key_num;
 	}
 	
 	//특정학교 유지보수 가져오기 메소드
-	public void getMain_school(){
-		
+	public MainBean getMain_school(int key_num){
+		try {
+			con = dbConn();
+			sql = "SELECT * FROM maintenance WHERE key_num ="+key_num;
+			pstmt = con.prepareStatement(sql); 
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				mBean = new MainBean();
+				mBean.setKey_num(key_num);
+				mBean.setSch_name(rs.getString("sch_name"));
+				mBean.setSang(rs.getString("sang"));
+				mBean.setCheck(rs.getString("check"));
+				mBean.setFood(rs.getString("food"));
+				mBean.setJimoon(rs.getString("jimoon"));
+				mBean.setRental(rs.getString("rental"));
+				mBean.setPay(rs.getInt("pay"));
+				mBean.setPeriod(rs.getString("period"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			dbClose();
+		}
+		return mBean;
 	}
 }
