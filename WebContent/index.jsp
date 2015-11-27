@@ -10,8 +10,7 @@
 	function schoolSearch() {
 		var sch_name = $('#sch_name').val();
 		$.post('./searchSchool.jsp',{sch_name:sch_name},function(result) {
-			var data = result.text();
-			alert(data);
+			alert(result);
 			$('#sch_span').html(data);
 		});
 	}
